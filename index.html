@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>チャント呑むトキノヤツ</title>
+  <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+  <link rel="stylesheet" media="all" href="css/style.css">
+  <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+  <link rel="icon" href="favicon.ico" type="image/x-icon">
+</head>
+
+
+<body>
+
+  <div class="title">
+      <img src="images/nomu_logo.png">
+  </div>
+
+
+<div id="contents">
+  <p id="naming"></p>
+  <div class="link">
+    <p id="url_mobile"></p>
+  </div>
+  <div id="image"></div>
+  <p id="tel"></p>
+  <p id="category_name_s"></p>
+  <p id="budget"></p>
+  <p id="category"></p>
+</div>
+
+<div class="btn">
+    <input type="button" value="お店を見つける" id="submit"/>
+    <p id="loading"></p>
+</div>
+
+<footer id="footer">
+	Copyright(c) DOKOSORE
+</footer>
+
+
+
+<!-- JavaScript -->
+<script>
+     
+var url = ""; //APIを呼ぶ出すためのURLをいれる変数
+
+// この関数はページ読み込みと同時に実行される
+window.onload = function(){
+
+    document.getElementById("submit").style.display ="none";
+    document.getElementById("contents").style.display ="none";
+
+    //現在地の緯度経度を取得する関数
+    function position(){
+        //infoの中に緯度経度が入る
+        const info = document.querySelector('#info')
+
+        if ('geolocation in navigator'){
+                loading.innerHTML = "LOADING"
+            } else {
+                loading.innerHTML  = "位置情報が使えません"
+            }
+        var wid = navigator.geolocation.watchPosition(urlset)
+
+    }
+
+    function urlset(pos){
+        var lat = pos.coords.latitude;
+        var lon = pos.coords.longitude;
+        const url_head = "https://api.gnavi.co.jp/RestSearchAPI/v3/?keyid=488e14851abb866c4f16dbde71b27889"
+
+        //チャントノムヤツ
+        const drink = "&bottomless_cup=1&midnight=1"
+
+        url = url_head + "&latitude=" + lat + "&longitude=" + lon + "&range=2" + drink + "&hit_per_page=100";
+        loading.innerHTML = ""
+        document.getElementById("submit").style.display ="inline-block";
+    }
+
+    position();
+}
+
+var array = [];
+
+
+
+$("#submit").on("click",  () => {
+
+    $.getJSON(url, (data) => {
+        data.rest.map( item => {
+            if(item.budget <= 3000){
+                array.push(item);
+            }
+        });
+
+        var num = Math.floor(Math.random() * array.length);
+
+        document.getElementById("contents").style.display ="block";
+        naming.innerHTML = array[num].name;
+        url_mobile.innerHTML = "<a href='" + array[num].url_mobile + "'>お店のリンク</a>";
+        image.innerHTML = "<img src = '" + array[num].image_url.shop_image1 + "' >"
+        tel.innerHTML = array[num].tel;
+        budget.innerHTML = array[num].budget;
+        category.innerHTML = array[num].category;
+                
+     });
+     array = [];
+});
+
+    
+
+
+
+  </script>
+</body>
+</html>
